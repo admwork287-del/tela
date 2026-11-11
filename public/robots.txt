@@ -1,0 +1,3 @@
+# Permite todos os rastreadores (evita sinais de cloaking)
+User-agent: *
+Allow: /

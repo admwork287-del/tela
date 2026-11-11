@@ -1,0 +1,29 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /
+
+# 0) Pass the Authorization header through to PHP (CGI/FastCGI strips it)
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+<IfModule mod_setenvif.c>
+  SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+</IfModule>
+
+# 1) Static files pass through
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 2) SPA fallback → index.html (serve same content to ALL user-agents - no cloaking)
+RewriteRule . /index.html [L,QSA]
+
+<IfModule mod_headers.c>
+  # Allow indexing for better SEO and to avoid cloaking signals
+  Header set X-Robots-Tag "index, follow"
+  Header set Cache-Control "no-store, private"
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType application/javascript .js .mjs
+  AddType text/css .css
+</IfModule>
