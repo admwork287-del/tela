@@ -9,12 +9,20 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
   SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 </IfModule>
 
-# 1) Static files pass through
+# 1) Social preview bots → serve OG preview with product data
+RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|FacebookBot|facebookcatalog|meta-externalagent|meta-externalfetcher|Instagram|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|SkypeUriPreview|Pinterest|redditbot|Applebot) [NC]
+RewriteCond %{REQUEST_URI} !^/(og\.php|placeholder\.svg|robots\.txt)$
+RewriteCond %{REQUEST_URI} !^/assets/
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpe?g|gif|svg|webp|woff2?|ico|txt|xml|map)$
+RewriteCond %{REQUEST_URI} !^/$
+RewriteRule ^(.+)$ /og.php?slug=$1 [L,QSA]
+
+# 2) Static files pass through
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# 2) SPA fallback → index.html (serve same content to ALL user-agents - no cloaking)
+# 3) SPA fallback → index.html
 RewriteRule . /index.html [L,QSA]
 
 <IfModule mod_headers.c>

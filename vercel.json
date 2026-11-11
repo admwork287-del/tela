@@ -10,6 +10,17 @@
     { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
     { "source": "/assets/(.*)", "destination": "/assets/$1" },
     { "source": "/favicon.png", "destination": "/favicon.png" },
+    {
+      "source": "/:slug((?!api/|assets/|favicon\\.png|robots\\.txt|sitemap\\.xml).+)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|Facebot|FacebookBot|facebookcatalog|meta-externalagent|meta-externalfetcher|Instagram|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|SkypeUriPreview|Pinterest|redditbot|Applebot).*"
+        }
+      ],
+      "destination": "/api/og?slug=:slug"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
